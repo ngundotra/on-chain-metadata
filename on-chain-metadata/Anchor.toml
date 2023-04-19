@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.localnet]
-on_chain_metadata = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+on_chain_metadata = "7KeydSrrr1vLiWCKrvNghTmRC5tjktXL1X9HVuRn7W65"
 
 [registry]
 url = "https://api.apr.dev"
