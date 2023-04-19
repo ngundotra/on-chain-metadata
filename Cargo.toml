@@ -1,0 +1,4 @@
+[workspace]
+members=[
+    "programs/on-chain-metadata"
+]
