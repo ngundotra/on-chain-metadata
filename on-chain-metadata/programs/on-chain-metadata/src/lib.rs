@@ -7,6 +7,7 @@ pub mod on_chain_metadata {
     use super::*;
 
     pub fn initialize(ctx: Context<Initialize>, space: u64) -> Result<()> {
+        ctx.accounts.metadata.owner = *ctx.accounts.owner.key;
         ctx.accounts.metadata.data = vec![0; space.try_into().unwrap()];
         Ok(())
     }
@@ -32,6 +33,10 @@ pub mod on_chain_metadata {
             }
         }
     }
+
+    pub fn close(ctx: Context<CloseMetadata>) -> Result<()> {
+        Ok(())
+    }
 }
 
 #[error_code]
@@ -45,7 +50,6 @@ pub struct Initialize<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     pub owner: Signer<'info>,
-    /// CHECK: it's okay for this account to be totally wiped imo
     #[account(init, payer = payer, space = 8 + std::mem::size_of::<OnChainMetadata>() + space as usize)]
     pub metadata: Account<'info, OnChainMetadata>,
     pub system_program: Program<'info, System>,
@@ -54,13 +58,23 @@ pub struct Initialize<'info> {
 #[derive(Accounts)]
 pub struct Write<'info> {
     pub owner: Signer<'info>,
-    #[account(mut)]
+    #[account(mut, has_one=owner)]
     pub metadata: Account<'info, OnChainMetadata>,
 }
 
 #[derive(Accounts)]
 pub struct Validate<'info> {
     #[account(mut)]
+    pub metadata: Account<'info, OnChainMetadata>,
+}
+
+#[derive(Accounts)]
+pub struct CloseMetadata<'info> {
+    pub owner: Signer<'info>,
+    /// CHECK: it does not matter who receives the lamports
+    #[account(mut)]
+    pub recipient: AccountInfo<'info>,
+    #[account(mut, close=recipient)]
     pub metadata: Account<'info, OnChainMetadata>,
 }
 
